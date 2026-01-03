@@ -5,7 +5,7 @@ import TopPhoto from "@/assets/hero-section/top-photo.png";
 
 export const HeroSection = () => {
   return (
-    <section className="h-[670px] flex flex-col relative md:h-[800px]">
+    <section className="fade h-[670px] flex flex-col relative md:h-[800px]">
       <h2 className="text-[20px] ml-[18px] mt-[58px] tracking-[0.1rem] font-bold  text-[#EB8338CC]  md:ml-32 md:mt-5 md:text-[50px] md:tracking-[0.5rem] ">
         WASEDA UNIVERCITY
       </h2>

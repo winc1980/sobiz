@@ -63,7 +63,7 @@ export const Carousel = () => {
   };
 
   return (
-    <section className="w-full mx-auto px-4">
+    <section className="fade w-full mx-auto px-4">
       <div className="relative">
         {/* カルーセルコンテナ */}
         <div className="overflow-hidden">

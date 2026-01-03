@@ -28,7 +28,7 @@ const stories: Story[] = [
 
 export const GreetingSection = () => {
   return (
-    <section className="relative flex flex-col overflow-hidden pt-[80px] md:pt-[160px]">
+    <section className="fade relative flex flex-col overflow-hidden pt-[80px] md:pt-[160px]">
       <Image
         src={GreetingBuilding}
         alt=""

@@ -5,7 +5,7 @@ import AboutWord from "@/assets/logo/about-word.png";
 
 export const AboutSection = () => {
   return (
-    <section className="relative">
+    <section className="fade relative">
       <Image
         src={AboutBridge}
         alt="about-bridge"

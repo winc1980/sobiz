@@ -38,7 +38,7 @@ const MvvItem = ({
 
 export const MvvSection = () => {
   return (
-    <section className="relative flex flex-col justify-end md:mt-[10vh] pb-[15vh]">
+    <section className="fade relative flex flex-col justify-end md:mt-[10vh] pb-[15vh]">
       <Image
         src={building}
         alt="背景の建物"
