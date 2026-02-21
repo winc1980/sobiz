@@ -1,0 +1,98 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/common.sh"
+source "$SCRIPT_DIR/lib/ai.sh"
+
+# オプション解析
+SKIP_CONFIRM=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -y|--yes)
+            SKIP_CONFIRM=true
+            shift
+            ;;
+        -h|--help)
+            cat << EOF
+Usage: commit [OPTIONS]
+
+AI Agentがコミットメッセージを生成してコミットします
+
+OPTIONS:
+    -y, --yes    確認をスキップして自動でコミット
+    -h, --help   ヘルプを表示
+
+EXAMPLES:
+    commit           # 対話的にコミット
+    commit -y        # 確認なしで自動コミット
+EOF
+            exit 0
+            ;;
+        *)
+            log_error "不明なオプション: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# 変更があるかチェック (ステージングされていない変更や未追跡ファイルも含む)
+if [[ -z "$(git status --porcelain 2>/dev/null)" ]]; then
+    log_warn "コミットする変更がありません"
+    exit 0
+fi
+
+# git statusとgit diffを表示
+log_info "変更内容:"
+git status --short
+echo
+
+# AI Agentにコミットメッセージを生成させる
+log_info "コミットメッセージを生成中..."
+
+STATUS_OUTPUT=$(git status --porcelain)
+DIFF_STAT=$(git diff --cached --stat)
+
+prompt="Generate commit message. Output ONLY the message, no explanations.
+
+Changes:
+$STATUS_OUTPUT
+
+Stats:
+$DIFF_STAT
+
+Format: <summary max 50 chars>
+<blank line>
+<details if needed>"
+
+COMMIT_MSG=$(run_ai_agent "$prompt")
+
+if [[ -z "$COMMIT_MSG" ]]; then
+    log_error "コミットメッセージの生成に失敗しました"
+    exit 1
+fi
+
+# コミットメッセージを表示
+echo
+log_info "生成されたコミットメッセージ:"
+echo "---"
+echo "$COMMIT_MSG"
+echo "---"
+echo
+
+# 確認
+if [[ "$SKIP_CONFIRM" == false ]]; then
+    read -p "このメッセージでコミットしますか? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        log_warn "コミットをキャンセルしました"
+        exit 0
+    fi
+fi
+
+# コミット実行
+git add -A
+git commit -m "$COMMIT_MSG"
+log_success "コミット完了"
